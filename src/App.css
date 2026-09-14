@@ -314,3 +314,39 @@ main > a {
     gap: 18px;
   }
 }
+
+@media (max-width: 720px) {
+  header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  header h1 {
+    flex-shrink: 0;
+  }
+
+  header > div {
+    width: auto;
+    margin-left: auto;
+    justify-content: flex-end;
+  }
+
+  header > button {
+    margin-left: auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 720px) {
+  header h1 {
+    font-size: 0.95rem;
+    letter-spacing: 0.05em;
+  }
+
+  header > button {
+    padding: 8px 10px;
+    font-size: 0.82rem;
+    border-radius: 10px;
+  }
+}
