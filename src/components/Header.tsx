@@ -1,7 +1,6 @@
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { useMetok } from "../core/metok/useMetok";
 import { useMonBalance } from "../core/network/useMonBalance";
-import { NetworkStatus } from "../core/network/NetworkStatus";
 import { formatBalance } from "../core/formatBalance";
 
 export function Header() {
@@ -9,52 +8,58 @@ export function Header() {
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
 
-  const {
-    formattedBalance: metokBalance,
-    isLoading: metokLoading,
-  } = useMetok();
-
-  const {
-    formattedBalance: monBalance,
-    isLoading: monLoading,
-  } = useMonBalance();
+  const { formattedBalance: metokBalance, isLoading: metokLoading } = useMetok();
+  const { formattedBalance: monBalance, isLoading: monLoading } = useMonBalance();
 
   const metaMask = connectors.find(
     (connector) => connector.name.toLowerCase().includes("metamask")
   );
 
   return (
-    <header>
-      <h1>METOK GAME</h1>
+    <header className="site-header">
+      <div className="brand">
+        <div className="brand-mark">M</div>
 
-      {isConnected ? (
-        <div>
-          <div>
-            {address?.slice(0, 6)}...{address?.slice(-4)}
-          </div>
-
-          <NetworkStatus />
-
-          <div>
-            MON: {monLoading ? "Loading..." : formatBalance(monBalance)}
-          </div>
-
-          <div>
-            METOK: {metokLoading ? "Loading..." : formatBalance(metokBalance)}
-          </div>
-
-          <button onClick={() => disconnect()}>
-            Disconnect
-          </button>
+        <div className="brand-copy">
+          <strong>METOK GAME</strong>
+          <span>On-chain gaming hub</span>
         </div>
-      ) : (
-        <button
-          onClick={() => metaMask && connect({ connector: metaMask })}
-          disabled={!metaMask || isPending}
-        >
-          {isPending ? "Connecting..." : "Connect MetaMask"}
-        </button>
-      )}
+      </div>
+
+      <div className="wallet-area">
+        {isConnected ? (
+          <>
+            <div className="wallet-info">
+              <span className="wallet-chip">
+                METOK {metokLoading ? "..." : formatBalance(metokBalance)}
+              </span>
+
+              <span className="wallet-chip">
+                MON {monLoading ? "..." : formatBalance(monBalance)}
+              </span>
+
+              <span className="wallet-chip">
+                {address?.slice(0, 6)}...{address?.slice(-4)}
+              </span>
+            </div>
+
+            <button
+              className="wallet-button secondary"
+              onClick={() => disconnect()}
+            >
+              Ngừng kết nối
+            </button>
+          </>
+        ) : (
+          <button
+            className="wallet-button"
+            onClick={() => metaMask && connect({ connector: metaMask })}
+            disabled={!metaMask || isPending}
+          >
+            {isPending ? "Đang kết nối..." : "Connect MetaMask"}
+          </button>
+        )}
+      </div>
     </header>
   );
 }
