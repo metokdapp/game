@@ -2,6 +2,7 @@ import { useAccount, useReadContract } from "wagmi";
 import { formatUnits } from "viem";
 import { METOK_ABI } from "./abi";
 import { METOK } from "./config";
+import { CHAIN } from "../network/chain";
 
 export function useMetok() {
   const { address } = useAccount();
@@ -11,6 +12,7 @@ export function useMetok() {
     abi: METOK_ABI,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
+    chainId: CHAIN.id,
     query: {
       enabled: !!address,
     },
