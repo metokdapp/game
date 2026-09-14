@@ -1,8 +1,12 @@
-export default function Game() {
+import { Link } from "react-router-dom";
+
+export default function GameTemplate() {
   return (
     <main>
-      <h1>METOK GAME</h1>
-      <p>Game UI</p>
+      <Link to="/">← Game Center</Link>
+
+      <h1>METOK Game</h1>
+      <p>Smart contract game sẽ được tích hợp tại đây.</p>
     </main>
   );
 }
