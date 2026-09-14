@@ -5,7 +5,12 @@ import { CHAIN } from "../network/chain";
 export const wagmiConfig = createConfig({
   chains: [CHAIN],
   connectors: [
-    metaMask(),
+    metaMask({
+      dappMetadata: {
+        name: "METOK Game",
+        url: window.location.origin,
+      },
+    }),
     injected(),
   ],
   transports: {
