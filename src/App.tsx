@@ -1,8 +1,9 @@
-import "./App.css";
+import { Suspense } from "react";
 import { Routes, Route } from "react-router-dom";
+import "./App.css";
 import { Header } from "./components/Header";
 import { GameGrid } from "./components/GameGrid";
-import Game001 from "./games/game001/Game";
+import { games } from "./registry/games";
 
 function Home() {
   return (
@@ -19,10 +20,23 @@ function App() {
     <>
       <Header />
 
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/game001" element={<Game001 />} />
-      </Routes>
+      <Suspense fallback={<main>Loading game...</main>}>
+        <Routes>
+          <Route path="/" element={<Home />} />
+
+          {games.map((game) => {
+            const GameComponent = game.component;
+
+            return (
+              <Route
+                key={game.id}
+                path={game.route}
+                element={<GameComponent />}
+              />
+            );
+          })}
+        </Routes>
+      </Suspense>
     </>
   );
 }

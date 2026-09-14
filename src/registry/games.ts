@@ -1,3 +1,7 @@
+import { lazy } from "react";
+
+const Game001 = lazy(() => import("../games/game001/Game"));
+
 export const games = [
   {
     id: "game001",
@@ -6,5 +10,6 @@ export const games = [
     image: "/game/games/game001/cover.png",
     route: "/game001",
     enabled: true,
+    component: Game001,
   },
 ] as const;
