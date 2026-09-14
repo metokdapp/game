@@ -1,9 +1,21 @@
 import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useMetok } from "../core/metok/useMetok";
+import { useMonBalance } from "../core/network/useMonBalance";
 
 export function Header() {
   const { address, isConnected } = useAccount();
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
+
+  const {
+    formattedBalance: metokBalance,
+    isLoading: metokLoading,
+  } = useMetok();
+
+  const {
+    formattedBalance: monBalance,
+    isLoading: monLoading,
+  } = useMonBalance();
 
   const metaMask = connectors.find(
     (connector) => connector.name.toLowerCase().includes("metamask")
@@ -15,9 +27,17 @@ export function Header() {
 
       {isConnected ? (
         <div>
-          <span>
+          <div>
             {address?.slice(0, 6)}...{address?.slice(-4)}
-          </span>
+          </div>
+
+          <div>
+            MON: {monLoading ? "Loading..." : Number(monBalance).toFixed(2)}
+          </div>
+
+          <div>
+            METOK: {metokLoading ? "Loading..." : Number(metokBalance).toFixed(2)}
+          </div>
 
           <button onClick={() => disconnect()}>
             Disconnect
