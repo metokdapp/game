@@ -1,5 +1,6 @@
 import "./App.css";
 import { Header } from "./components/Header";
+import { GameGrid } from "./components/GameGrid";
 
 function App() {
   return (
@@ -8,7 +9,9 @@ function App() {
 
       <main>
         <h2>METOK Game Center</h2>
-        <p>Danh sách game sẽ hiển thị tại đây.</p>
+        <p>Chọn game để bắt đầu chơi.</p>
+
+        <GameGrid />
       </main>
     </>
   );
