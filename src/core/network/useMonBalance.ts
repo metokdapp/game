@@ -1,11 +1,13 @@
 import { useAccount, useBalance } from "wagmi";
 import { formatEther } from "viem";
+import { CHAIN } from "./chain";
 
 export function useMonBalance() {
   const { address } = useAccount();
 
   const { data, isLoading, refetch } = useBalance({
     address,
+    chainId: CHAIN.id,
     query: {
       enabled: !!address,
     },
@@ -15,7 +17,7 @@ export function useMonBalance() {
     balance: data?.value,
     formattedBalance:
       data?.value !== undefined ? formatEther(data.value) : "0",
-    symbol: data?.symbol || "MON",
+    symbol: "MON",
     isLoading,
     refetch,
   };
