@@ -2,6 +2,7 @@ import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { useMetok } from "../core/metok/useMetok";
 import { useMonBalance } from "../core/network/useMonBalance";
 import { NetworkStatus } from "../core/network/NetworkStatus";
+import { formatBalance } from "../core/formatBalance";
 
 export function Header() {
   const { address, isConnected } = useAccount();
@@ -35,11 +36,11 @@ export function Header() {
           <NetworkStatus />
 
           <div>
-            MON: {monLoading ? "Loading..." : Number(monBalance).toFixed(2)}
+            MON: {monLoading ? "Loading..." : formatBalance(monBalance)}
           </div>
 
           <div>
-            METOK: {metokLoading ? "Loading..." : Number(metokBalance).toFixed(2)}
+            METOK: {metokLoading ? "Loading..." : formatBalance(metokBalance)}
           </div>
 
           <button onClick={() => disconnect()}>
