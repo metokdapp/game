@@ -8,17 +8,9 @@ import { games } from "./registry/games";
 
 function Home() {
   return (
-    <main className="home">
-      <section className="hero">
-        <span className="hero-tag">ON-CHAIN GAME HUB</span>
-
-        <h2>METOK Game Center</h2>
-
-        <p>
-          Chọn game, kết nối ví và chơi trực tiếp với smart contract.
-        </p>
-      </section>
-
+    <main>
+      <h2>METOK Game Center</h2>
+      <p>Chọn game để bắt đầu chơi.</p>
       <GameGrid />
     </main>
   );
@@ -26,7 +18,7 @@ function Home() {
 
 function App() {
   return (
-    <div className="app-shell">
+    <>
       <Header />
 
       <Suspense fallback={<main>Loading game...</main>}>
@@ -48,7 +40,7 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
-    </div>
+    </>
   );
 }
 

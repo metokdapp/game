@@ -1,6 +1,7 @@
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { useMetok } from "../core/metok/useMetok";
 import { useMonBalance } from "../core/network/useMonBalance";
+import { NetworkStatus } from "../core/network/NetworkStatus";
 import { formatBalance } from "../core/formatBalance";
 
 export function Header() {
@@ -8,58 +9,52 @@ export function Header() {
   const { connect, connectors, isPending } = useConnect();
   const { disconnect } = useDisconnect();
 
-  const { formattedBalance: metokBalance, isLoading: metokLoading } = useMetok();
-  const { formattedBalance: monBalance, isLoading: monLoading } = useMonBalance();
+  const {
+    formattedBalance: metokBalance,
+    isLoading: metokLoading,
+  } = useMetok();
+
+  const {
+    formattedBalance: monBalance,
+    isLoading: monLoading,
+  } = useMonBalance();
 
   const metaMask = connectors.find(
     (connector) => connector.name.toLowerCase().includes("metamask")
   );
 
   return (
-    <header className="site-header">
-      <div className="brand">
-        <div className="brand-mark">M</div>
+    <header>
+      <h1>METOK GAME</h1>
 
-        <div className="brand-copy">
-          <strong>METOK GAME</strong>
-          <span>On-chain gaming hub</span>
-        </div>
-      </div>
+      {isConnected ? (
+        <div>
+          <div>
+            {address?.slice(0, 6)}...{address?.slice(-4)}
+          </div>
 
-      <div className="wallet-area">
-        {isConnected ? (
-          <>
-            <div className="wallet-info">
-              <span className="wallet-chip">
-                {metokLoading ? "..." : formatBalance(metokBalance)} METOK
-              </span>
+          <NetworkStatus />
 
-              <span className="wallet-chip">
-                {monLoading ? "..." : formatBalance(monBalance)} MON
-              </span>
+          <div>
+            MON: {monLoading ? "Loading..." : formatBalance(monBalance)}
+          </div>
 
-              <span className="wallet-chip">
-                {address?.slice(0, 6)}...{address?.slice(-4)}
-              </span>
-            </div>
+          <div>
+            METOK: {metokLoading ? "Loading..." : formatBalance(metokBalance)}
+          </div>
 
-            <button
-              className="wallet-button secondary"
-              onClick={() => disconnect()}
-            >
-              Disconnect
-            </button>
-          </>
-        ) : (
-          <button
-            className="wallet-button"
-            onClick={() => metaMask && connect({ connector: metaMask })}
-            disabled={!metaMask || isPending}
-          >
-            {isPending ? "Connecting..." : "Connect MetaMask"}
+          <button onClick={() => disconnect()}>
+            Disconnect
           </button>
-        )}
-      </div>
+        </div>
+      ) : (
+        <button
+          onClick={() => metaMask && connect({ connector: metaMask })}
+          disabled={!metaMask || isPending}
+        >
+          {isPending ? "Connecting..." : "Connect MetaMask"}
+        </button>
+      )}
     </header>
   );
 }
