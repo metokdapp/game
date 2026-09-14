@@ -31,11 +31,11 @@ export function Header() {
           <>
             <div className="wallet-info">
               <span className="wallet-chip">
-                METOK {metokLoading ? "..." : formatBalance(metokBalance)}
+                {metokLoading ? "..." : formatBalance(metokBalance)} METOK
               </span>
 
               <span className="wallet-chip">
-                MON {monLoading ? "..." : formatBalance(monBalance)}
+                {monLoading ? "..." : formatBalance(monBalance)} MON
               </span>
 
               <span className="wallet-chip">
@@ -47,7 +47,7 @@ export function Header() {
               className="wallet-button secondary"
               onClick={() => disconnect()}
             >
-              Ngừng kết nối
+              Disconnect
             </button>
           </>
         ) : (
@@ -56,7 +56,7 @@ export function Header() {
             onClick={() => metaMask && connect({ connector: metaMask })}
             disabled={!metaMask || isPending}
           >
-            {isPending ? "Đang kết nối..." : "Connect MetaMask"}
+            {isPending ? "Connecting..." : "Connect MetaMask"}
           </button>
         )}
       </div>
