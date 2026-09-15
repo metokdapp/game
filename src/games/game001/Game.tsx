@@ -11,6 +11,7 @@ import {
 import { GAME_ABI, GAME_ADDRESS } from "./contract";
 import { useGame001 } from "./useGame001";
 import { useGame001Actions } from "./useGame001Actions";
+import { useWaitingRooms, type WaitingRoom } from "./useWaitingRooms";
 import {
   clearReveal,
   createSecret,
@@ -57,6 +58,7 @@ export default function Game001() {
   }, [roomIdText]);
 
   const state = useGame001(roomId);
+  const lobby = useWaitingRooms();
   const actions = useGame001Actions();
 
   const room = state.room.data as
@@ -135,6 +137,7 @@ export default function Game001() {
       state.allowance.refetch(),
       state.balance.refetch(),
       state.claimable.refetch(),
+      lobby.refetch(),
     ]);
   }
 
@@ -237,6 +240,31 @@ export default function Game001() {
 
     await runTx("Join phòng", () =>
       actions.joinRoom(roomId, bankroll, address),
+    );
+  }
+
+  async function handleLobbyJoin(target: WaitingRoom) {
+    if (!address) {
+      setMessage("Hãy kết nối ví trước.");
+      return;
+    }
+
+    setRoomIdText(target.roomId.toString());
+
+    if ((allowance ?? 0n) < target.stake) {
+      setBankrollText(formatUnits(target.stake, 18));
+      setMessage(
+        `Phòng #${target.roomId}: cần approve ít nhất ${fmt(target.stake)} METOK trước khi Join.`,
+      );
+      return;
+    }
+
+    await runTx(
+      `Join phòng #${target.roomId}`,
+      () => actions.joinRoom(target.roomId, target.stake, address),
+      () => {
+        setRoomIdText(target.roomId.toString());
+      },
     );
   }
 
@@ -358,6 +386,66 @@ export default function Game001() {
       </p>
 
       <div className="rps-grid">
+        <section className="rps-card rps-card-wide">
+          <h3>Phòng đang chờ ({lobby.waitingRooms.length})</h3>
+
+          {lobby.isLoading ? (
+            <p className="rps-help">Đang tải danh sách phòng...</p>
+          ) : lobby.waitingRooms.length === 0 ? (
+            <p className="rps-help">
+              Hiện chưa có phòng nào đang chờ người chơi.
+            </p>
+          ) : (
+            <div className="rps-status">
+              {lobby.waitingRooms.map((waitingRoom) => {
+                const secondsLeft = Math.max(
+                  0,
+                  Number(waitingRoom.waitingDeadline) -
+                    Number(lobby.now),
+                );
+
+                return (
+                  <article
+                    className="rps-stat"
+                    key={waitingRoom.roomId.toString()}
+                  >
+                    <span>Room #{waitingRoom.roomId.toString()}</span>
+                    <strong>
+                      Cược: {fmt(waitingRoom.stake)} METOK
+                    </strong>
+
+                    <span>
+                      Bankroll host: {fmt(waitingRoom.hostBalance)} METOK
+                    </span>
+
+                    <span>
+                      Host: {shortAddress(waitingRoom.host)}
+                    </span>
+
+                    <span>
+                      Còn khoảng {secondsLeft}s
+                    </span>
+
+                    <button
+                      className="rps-button"
+                      disabled={
+                        !isConnected ||
+                        busy ||
+                        paused === true ||
+                        waitingRoom.host.toLowerCase() ===
+                          address?.toLowerCase()
+                      }
+                      onClick={() => handleLobbyJoin(waitingRoom)}
+                    >
+                      Join {fmt(waitingRoom.stake)} METOK
+                    </button>
+                  </article>
+                );
+              })}
+            </div>
+          )}
+        </section>
+
         <section className="rps-card">
           <h3>Phòng game</h3>
 
