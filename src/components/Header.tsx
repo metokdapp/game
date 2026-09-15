@@ -19,9 +19,12 @@ export function Header() {
     isLoading: monLoading,
   } = useMonBalance();
 
-  const metaMask = connectors.find(
-    (connector) => connector.name.toLowerCase().includes("metamask")
-  );
+  const metaMask =
+    connectors.find((connector) => connector.id === "metaMask") ??
+    connectors.find((connector) => connector.id === "injected") ??
+    connectors.find((connector) =>
+      connector.name.toLowerCase().includes("metamask"),
+    );
 
   return (
     <header>
