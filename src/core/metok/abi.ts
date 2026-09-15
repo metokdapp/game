@@ -35,6 +35,8 @@ export const METOK_ABI = parseAbi([
   'function owner() view returns (address)',
   'function totalSupply() view returns (uint256)',
   'function balanceOf(address) view returns (uint256)',
+  'function allowance(address owner,address spender) view returns (uint256)',
+  'function approve(address spender,uint256 amount) returns (bool)',
   'function TOTAL_SUPPLY() view returns (uint256)',
   'function VIRTUAL_MON() view returns (uint256)',
   'function INITIAL_PRICE_WAD() view returns (uint256)',
