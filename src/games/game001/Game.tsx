@@ -251,17 +251,21 @@ export default function Game001() {
 
     setRoomIdText(target.roomId.toString());
 
-    if ((allowance ?? 0n) < target.stake) {
-      setBankrollText(formatUnits(target.stake, 18));
+    if (bankroll < target.stake) {
+      setMessage(`Bankroll phải >= ${fmt(target.stake)} METOK.`);
+      return;
+    }
+
+    if ((allowance ?? 0n) < bankroll) {
       setMessage(
-        `Phòng #${target.roomId}: cần approve ít nhất ${fmt(target.stake)} METOK trước khi Join.`,
+        `Phòng #${target.roomId}: cần approve ít nhất ${fmt(bankroll)} METOK trước khi Join.`,
       );
       return;
     }
 
     await runTx(
       `Join phòng #${target.roomId}`,
-      () => actions.joinRoom(target.roomId, target.stake, address),
+      () => actions.joinRoom(target.roomId, bankroll, address),
       () => {
         setRoomIdText(target.roomId.toString());
       },
