@@ -19,9 +19,14 @@ export function Header() {
     isLoading: monLoading,
   } = useMonBalance();
 
+  const hasInjectedProvider =
+    typeof window !== "undefined" && "ethereum" in window;
+
   const metaMask =
-    connectors.find((connector) => connector.id === "metaMask") ??
-    connectors.find((connector) => connector.id === "injected") ??
+    (hasInjectedProvider
+      ? connectors.find((connector) => connector.id === "metaMask") ??
+        connectors.find((connector) => connector.id === "injected")
+      : connectors.find((connector) => connector.id === "metaMaskSDK")) ??
     connectors.find((connector) =>
       connector.name.toLowerCase().includes("metamask"),
     );
