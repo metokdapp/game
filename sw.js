@@ -1,4 +1,4 @@
-const CACHE = "metok-rps-v645-1";
+const CACHE = "metok-rps-v645-2";
 const SHELL = ["./", "./index.html", "./styles.css", "./app.js", "./config.js", "./icon.svg", "./manifest.webmanifest"];
 self.addEventListener("install", event => event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL))));
 self.addEventListener("activate", event => event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))));

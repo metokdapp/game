@@ -112,16 +112,16 @@ const toNum = value => Number(value ?? 0n);
 const fmt = (value, digits = 3) => {
   try {
     const n = Number(ethers.formatUnits(value ?? 0n, state.decimals));
-    return Number.isFinite(n) ? n.toLocaleString("vi-VN", { maximumFractionDigits: digits }) : "—";
+    return Number.isFinite(n) ? n.toLocaleString("en-US", { maximumFractionDigits: digits }) : "—";
   } catch { return "—"; }
 };
 const fmtMon = value => {
-  try { return Number(ethers.formatEther(value ?? 0n)).toLocaleString("vi-VN", { maximumFractionDigits: 4 }); }
+  try { return Number(ethers.formatEther(value ?? 0n)).toLocaleString("en-US", { maximumFractionDigits: 4 }); }
   catch { return "—"; }
 };
 const parseMetok = value => {
   const s = String(value ?? "").trim();
-  if (!s || Number(s) <= 0) throw new Error("Nhập số METOK lớn hơn 0.");
+  if (!s || Number(s) <= 0) throw new Error("Enter a METOK amount greater than 0.");
   return ethers.parseUnits(s, state.decimals);
 };
 const isSame = (a, b) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
@@ -129,7 +129,7 @@ const isSame = (a, b) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
 function toast(title, message = "", type = "info", txHash = null) {
   const el = document.createElement("div");
   el.className = `toast ${type}`;
-  const link = txHash ? `<a href="${CONFIG.explorerUrl}/tx/${txHash}" target="_blank" rel="noopener noreferrer">Xem giao dịch ↗</a>` : "";
+  const link = txHash ? `<a href="${CONFIG.explorerUrl}/tx/${txHash}" target="_blank" rel="noopener noreferrer">View Transaction ↗</a>` : "";
   el.innerHTML = `<strong>${escapeHtml(title)}</strong>${escapeHtml(message)} ${link}`;
   $("toastStack").appendChild(el);
   setTimeout(() => el.remove(), type === "error" ? 9000 : 6000);
@@ -137,15 +137,15 @@ function toast(title, message = "", type = "info", txHash = null) {
 function escapeHtml(v) { return String(v).replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[c])); }
 function friendlyError(err) {
   const raw = [err?.shortMessage, err?.reason, err?.message].filter(Boolean).join(" · ");
-  if (/user rejected|ACTION_REJECTED|denied/i.test(raw)) return "Bạn đã hủy yêu cầu trong ví.";
-  if (/insufficient funds/i.test(raw)) return "Không đủ MON để trả gas.";
-  if (/InsufficientAvailableBalance/i.test(raw)) return "Vault không đủ METOK khả dụng.";
-  if (/SessionRiskExceeded/i.test(raw)) return "Room vượt quá risk còn lại của session.";
-  if (/SessionRoomLimitExceeded/i.test(raw)) return "Bankroll vượt max room bankroll của session.";
-  if (/ActiveRoomExists/i.test(raw)) return "Ví đang có một phòng hoạt động.";
-  if (/WaitingWindowClosed/i.test(raw)) return "Phòng chờ đã hết hạn.";
-  if (/StaleRound/i.test(raw)) return "Round đã đổi. DApp sẽ tải lại trạng thái.";
-  return (err?.shortMessage || err?.reason || err?.message || "Giao dịch thất bại").slice(0, 260);
+  if (/user rejected|ACTION_REJECTED|denied/i.test(raw)) return "You rejected the request in your wallet.";
+  if (/insufficient funds/i.test(raw)) return "Insufficient MON for gas.";
+  if (/InsufficientAvailableBalance/i.test(raw)) return "The Vault does not have enough available METOK.";
+  if (/SessionRiskExceeded/i.test(raw)) return "The room exceeds the session’s remaining risk.";
+  if (/SessionRoomLimitExceeded/i.test(raw)) return "Bankroll exceeds the session’s maximum room bankroll.";
+  if (/ActiveRoomExists/i.test(raw)) return "The wallet already has an active room.";
+  if (/WaitingWindowClosed/i.test(raw)) return "The waiting room has expired.";
+  if (/StaleRound/i.test(raw)) return "The round changed. The DApp will refresh the state.";
+  return (err?.shortMessage || err?.reason || err?.message || "Transaction failed").slice(0, 260);
 }
 
 function showModal(title, html) {
@@ -156,7 +156,7 @@ function showModal(title, html) {
 function closeModal() { $("modalBackdrop").hidden = true; }
 
 async function switchToMonad() {
-  if (!window.ethereum) throw new Error("Không tìm thấy ví EVM trong trình duyệt.");
+  if (!window.ethereum) throw new Error("No EVM wallet found in this browser.");
   try {
     await window.ethereum.request({ method: "wallet_switchEthereumChain", params: [{ chainId: CONFIG.chainIdHex }] });
   } catch (err) {
@@ -174,7 +174,7 @@ async function switchToMonad() {
 async function connectWallet() {
   if (!window.ethereum) {
     const current = location.href.replace(/^https?:\/\//, "");
-    showModal("Cần ví EVM", `<p>Mở trang này trong trình duyệt của MetaMask/Rabby/Phantom hoặc cài ví EVM hỗ trợ Monad.</p><a class="btn btn-primary full" href="https://metamask.app.link/dapp/${escapeHtml(current)}">Mở bằng MetaMask</a>`);
+    showModal("EVM Wallet Required", `<p>Open this page in the MetaMask, Rabby, or Phantom browser, or install an EVM wallet that supports Monad.</p><a class="btn btn-primary full" href="https://metamask.app.link/dapp/${escapeHtml(current)}">Open with MetaMask</a>`);
     return false;
   }
   try {
@@ -187,10 +187,10 @@ async function connectWallet() {
     $("walletAddress").textContent = state.account;
     loadLocalSession();
     await refreshAll();
-    toast("Ví đã kết nối", short(state.account), "success");
+    toast("Wallet connected", short(state.account), "success");
     return true;
   } catch (err) {
-    toast("Không thể kết nối ví", friendlyError(err), "error");
+    toast("Unable to connect wallet", friendlyError(err), "error");
     return false;
   }
 }
@@ -204,7 +204,7 @@ function gameWriteWith(signer) { return new ethers.Contract(CONFIG.gameAddress, 
 function tokenWriteWith(signer) { return new ethers.Contract(CONFIG.metokAddress, ERC20_ABI, signer); }
 
 async function gameplaySigner() {
-  if (!await requireWallet()) throw new Error("Cần kết nối ví.");
+  if (!await requireWallet()) throw new Error("Wallet connection required.");
   if (state.useSession && state.sessionWallet) {
     try {
       const active = await gameRead.activeSession(state.account);
@@ -217,16 +217,16 @@ async function gameplaySigner() {
 
 async function runTx(label, action, { refresh = true } = {}) {
   try {
-    toast(label, "Xác nhận giao dịch…");
+    toast(label, "Confirm transaction…");
     const tx = await action();
-    toast(label, "Đã gửi. Đang chờ xác nhận…", "info", tx.hash);
+    toast(label, "Submitted. Waiting for confirmation…", "info", tx.hash);
     const receipt = await tx.wait();
     if (receipt.status !== 1) throw new Error("Transaction reverted");
     toast(`${label} ✓`, `Block ${receipt.blockNumber}`, "success", tx.hash);
     if (refresh) await refreshAll();
     return receipt;
   } catch (err) {
-    toast(`${label} thất bại`, friendlyError(err), "error");
+    toast(`${label} failed`, friendlyError(err), "error");
     throw err;
   }
 }
@@ -254,7 +254,7 @@ async function refreshProtocol() {
     $("protocolFeesLabel").textContent = `${fmt(fees)} METOK`;
     $("solventFullLabel").textContent = solvent ? "✓ TRUE" : "⚠ FALSE";
   } catch (err) {
-    $("solvencyLabel").textContent = "RPC chưa sẵn sàng";
+    $("solvencyLabel").textContent = "RPC unavailable";
   }
 }
 
@@ -298,7 +298,7 @@ function roomCard(roomId, room) {
   return `<article class="room-card panel" data-room-id="${roomId}">
     <div class="room-top"><span class="room-id">Room #${roomId}</span><span class="state-badge ${badge}">${stateName}</span></div>
     <div class="room-stats"><div><span>Stake</span><strong>${fmt(room.stake)} METOK</strong></div><div><span>Bankroll</span><strong>${fmt(room.initialBankroll)} METOK</strong></div></div>
-    <div class="room-host">${waiting ? "Đang chờ đối thủ · " : "Host · "}${short(room.host)}</div>
+    <div class="room-host">${waiting ? "Waiting for opponent · " : "Host · "}${short(room.host)}</div>
   </article>`;
 }
 
@@ -312,11 +312,11 @@ async function refreshLobby() {
     const settled = await Promise.allSettled(ids.map(id => gameRead.getRoom(id)));
     state.lobbyRooms = settled.map((r, i) => r.status === "fulfilled" ? { id: ids[i], room: r.value } : null).filter(Boolean);
     const display = state.lobbyRooms.filter(x => toNum(x.room.state) === 1 || toNum(x.room.state) === 2);
-    $("roomCountLabel").textContent = `${display.length} phòng đang hiển thị · next #${next}`;
-    $("roomsGrid").innerHTML = display.length ? display.map(x => roomCard(x.id, x.room)).join("") : `<div class="empty-state panel">Chưa có phòng Waiting/Active gần đây. Hãy tạo phòng đầu tiên.</div>`;
+    $("roomCountLabel").textContent = `${display.length} rooms displayed · next #${next}`;
+    $("roomsGrid").innerHTML = display.length ? display.map(x => roomCard(x.id, x.room)).join("") : `<div class="empty-state panel">No recent Waiting/Active rooms. Create the first room.</div>`;
     $$(".room-card").forEach(el => el.addEventListener("click", () => selectRoom(el.dataset.roomId, true)));
   } catch (err) {
-    $("roomsGrid").innerHTML = `<div class="empty-state panel">Không đọc được lobby. Kiểm tra RPC và thử lại.</div>`;
+    $("roomsGrid").innerHTML = `<div class="empty-state panel">Unable to load the lobby. Check the RPC and try again.</div>`;
   }
 }
 
@@ -363,7 +363,7 @@ function renderRoom() {
   const stateName = ROOM_STATE[toNum(r.state)];
   $("gameSubtitle").textContent = `Room #${state.selectedRoomId} · ${stateName}`;
   $("hostName").textContent = short(r.host);
-  $("challengerName").textContent = r.challenger === ZERO ? "Đang chờ…" : short(r.challenger);
+  $("challengerName").textContent = r.challenger === ZERO ? "Waiting…" : short(r.challenger);
   $("hostBankroll").textContent = `${fmt(r.hostBalance)} METOK`;
   $("challengerBankroll").textContent = `${fmt(r.challengerBalance)} METOK`;
   $("roomIdLabel").textContent = `#${state.selectedRoomId}`;
@@ -378,15 +378,15 @@ function renderRoom() {
 
   if (toNum(r.state) === 1) {
     $("timerLabel").textContent = countdown(r.waitingDeadline);
-    $("phaseLabel").textContent = "Chờ đối thủ";
-    $("choiceTitle").textContent = "Phòng đang chờ người chơi thứ hai";
+    $("phaseLabel").textContent = "Waiting for opponent";
+    $("choiceTitle").textContent = "Waiting for a second player";
     $("commitState").textContent = "Waiting";
     $("revealBox").hidden = true;
     $("resolveTimeoutBtn").hidden = true;
     return;
   }
   if (!active) {
-    $("timerLabel").textContent = "DONE"; $("phaseLabel").textContent = "Phòng đã đóng"; $("choiceTitle").textContent = "Trận đấu đã kết thúc";
+    $("timerLabel").textContent = "DONE"; $("phaseLabel").textContent = "Room closed"; $("choiceTitle").textContent = "The match has ended";
     $("commitState").textContent = "Closed"; $("revealBox").hidden = true; $("resolveTimeoutBtn").hidden = true; return;
   }
 
@@ -399,7 +399,7 @@ function renderRoom() {
   const timedOut = t >= revealEnd;
   $("timerLabel").textContent = countdown(inChoice ? choiceEnd : revealEnd);
   $("phaseLabel").textContent = inChoice ? "COMMIT PHASE" : inReveal ? "REVEAL PHASE" : "TIMEOUT";
-  $("choiceTitle").textContent = inChoice ? "Rock, Paper hay Scissors?" : inReveal ? "Reveal lựa chọn" : "Round cần được xử lý";
+  $("choiceTitle").textContent = inChoice ? "Rock, Paper or Scissors?" : inReveal ? "Reveal Choice" : "Round needs resolution";
 
   const mineHost = state.account && isSame(r.host, state.account);
   const mineChallenger = state.account && isSame(r.challenger, state.account);
@@ -407,7 +407,7 @@ function renderRoom() {
   const myRevealed = mineHost ? round.hostRevealed : mineChallenger ? round.challengerRevealed : false;
   const local = getLocalChoice(r);
   const committed = myCommit && myCommit !== ZERO_HASH;
-  $("commitState").textContent = myRevealed ? "✓ Revealed" : committed ? "✓ Committed" : "Chưa commit";
+  $("commitState").textContent = myRevealed ? "✓ Revealed" : committed ? "✓ Committed" : "Not committed";
   $("commitState").style.color = myRevealed ? "var(--green)" : committed ? "#d7baff" : "var(--muted)";
 
   $$(".choice-btn").forEach(btn => {
@@ -418,10 +418,10 @@ function renderRoom() {
 
   const canReveal = inReveal && committed && !myRevealed && local;
   $("revealBox").hidden = !canReveal;
-  if (local) $("savedChoiceLabel").textContent = `${CHOICE_EMOJI[local.choice]} ${CHOICE[local.choice]} đã lưu an toàn trên thiết bị`;
+  if (local) $("savedChoiceLabel").textContent = `${CHOICE_EMOJI[local.choice]} ${CHOICE[local.choice]} safely saved on this device`;
   $("backupSecretBtn").hidden = !local || myRevealed;
   $("resolveTimeoutBtn").hidden = !(t >= choiceEnd);
-  if (timedOut) $("resolveTimeoutBtn").textContent = "⏱ Xử lý timeout";
+  if (timedOut) $("resolveTimeoutBtn").textContent = "⏱ Resolve Timeout";
 }
 
 function countdown(unix) {
@@ -436,30 +436,30 @@ async function createRoom() {
   if (!await requireWallet()) return;
   const stake = parseMetok($("stakeInput").value);
   const bankroll = parseMetok($("bankrollInput").value);
-  if (bankroll < stake) throw new Error("Bankroll phải lớn hơn hoặc bằng stake.");
+  if (bankroll < stake) throw new Error("Bankroll must be greater than or equal to the stake.");
   const signer = await gameplaySigner();
-  const receipt = await runTx("Tạo phòng", () => gameWriteWith(signer).createRoom(stake, bankroll), { refresh: false });
+  const receipt = await runTx("Create Room", () => gameWriteWith(signer).createRoom(stake, bankroll), { refresh: false });
   let roomId;
   for (const log of receipt.logs) {
     try { const parsed = gameInterface.parseLog(log); if (parsed?.name === "RoomCreated") { roomId = parsed.args.roomId.toString(); break; } } catch {}
   }
   await refreshAll();
-  if (roomId) { await selectRoom(roomId, true); toast("Phòng đã sẵn sàng", `Room #${roomId} — gửi link cho đối thủ.`, "success"); }
+  if (roomId) { await selectRoom(roomId, true); toast("Room ready", `Room #${roomId} — send the link to your opponent.`, "success"); }
 }
 
 async function joinRoom() {
   if (!await requireWallet()) return;
   const id = $("joinRoomInput").value.trim();
-  if (!id) throw new Error("Nhập Room ID.");
+  if (!id) throw new Error("Enter a Room ID.");
   const signer = await gameplaySigner();
-  await runTx(`Vào Room #${id}`, () => gameWriteWith(signer).joinRoom(id));
+  await runTx(`Join Room #${id}`, () => gameWriteWith(signer).joinRoom(id));
   await selectRoom(id, true);
 }
 
 async function commitChoice(choice) {
   if (!await requireWallet() || !state.selectedRoom || !state.selectedRound) return;
   const r = state.selectedRoom;
-  if (!isParticipant(r, state.account)) throw new Error("Ví này không phải người chơi của phòng.");
+  if (!isParticipant(r, state.account)) throw new Error("This wallet is not a player in this room.");
   const secret = ethers.hexlify(ethers.randomBytes(32));
   const commitment = await gameRead.commitmentFor(state.selectedRoomId, r.matchId, r.roundId, state.account, choice, secret);
   saveLocalChoice(r, { choice, secret, commitment, createdAt: Date.now() });
@@ -475,10 +475,10 @@ async function commitChoice(choice) {
 async function revealChoice() {
   if (!state.selectedRoom) return;
   const local = getLocalChoice(state.selectedRoom);
-  if (!local) throw new Error("Không tìm thấy secret trên thiết bị này.");
+  if (!local) throw new Error("Secret not found on this device.");
   const r = state.selectedRoom;
   const signer = await gameplaySigner();
-  await runTx("Reveal lựa chọn", () => gameWriteWith(signer).revealChoice(state.selectedRoomId, r.matchId, r.roundId, local.choice, local.secret));
+  await runTx("Reveal Choice", () => gameWriteWith(signer).revealChoice(state.selectedRoomId, r.matchId, r.roundId, local.choice, local.secret));
 }
 
 async function smartTimeout() {
@@ -489,23 +489,23 @@ async function smartTimeout() {
   const signer = await gameplaySigner();
   const game = gameWriteWith(signer);
   const t = now();
-  if (t < Number(r.choiceDeadline)) throw new Error("Choice window chưa kết thúc.");
+  if (t < Number(r.choiceDeadline)) throw new Error("The choice window has not ended.");
 
   if (!hostCommitted && !challengerCommitted) {
-    if (t >= Number(r.revealDeadline)) return runTx("Đóng room inactivity", () => game.forceSettleChoiceTimeout(state.selectedRoomId, r.matchId, r.roundId));
-    return runTx("Xử lý no-commit timeout", () => game.settleChoiceTimeout(state.selectedRoomId, r.matchId, r.roundId, 0, ZERO_HASH));
+    if (t >= Number(r.revealDeadline)) return runTx("Close Inactive Room", () => game.forceSettleChoiceTimeout(state.selectedRoomId, r.matchId, r.roundId));
+    return runTx("Resolve No-Commit Timeout", () => game.settleChoiceTimeout(state.selectedRoomId, r.matchId, r.roundId, 0, ZERO_HASH));
   }
   if (hostCommitted && challengerCommitted) {
-    if (t < Number(r.revealDeadline)) throw new Error("Đang trong reveal window. Hãy reveal nếu bạn đã commit.");
-    return runTx("Xử lý reveal timeout", () => game.settleRevealTimeout(state.selectedRoomId, r.matchId, r.roundId));
+    if (t < Number(r.revealDeadline)) throw new Error("The reveal window is active. Reveal if you committed.");
+    return runTx("Resolve Reveal Timeout", () => game.settleRevealTimeout(state.selectedRoomId, r.matchId, r.roundId));
   }
   const local = getLocalChoice(r);
   const mineIsCommitted = (isSame(r.host, state.account) && hostCommitted) || (isSame(r.challenger, state.account) && challengerCommitted);
   if (t < Number(r.revealDeadline) && local && mineIsCommitted) {
-    return runTx("Chứng minh commit & settle", () => game.settleChoiceTimeout(state.selectedRoomId, r.matchId, r.roundId, local.choice, local.secret));
+    return runTx("Prove Commit & Settle", () => game.settleChoiceTimeout(state.selectedRoomId, r.matchId, r.roundId, local.choice, local.secret));
   }
   if (t >= Number(r.revealDeadline)) return runTx("Force settle timeout", () => game.forceSettleChoiceTimeout(state.selectedRoomId, r.matchId, r.roundId));
-  throw new Error("Đang chờ preimage hoặc hết reveal grace.");
+  throw new Error("Waiting for a preimage or for the reveal grace period to expire.");
 }
 
 async function leaveRoom() {
@@ -514,9 +514,9 @@ async function leaveRoom() {
   const signer = await gameplaySigner();
   const game = gameWriteWith(signer);
   if (toNum(r.state) === 2 && state.selectedRound && now() < Number(r.choiceDeadline) && state.selectedRound.hostCommitment === ZERO_HASH && state.selectedRound.challengerCommitment === ZERO_HASH) {
-    return runTx("Rời phòng ngay", () => game.requestImmediateLeave(state.selectedRoomId, r.matchId, r.roundId));
+    return runTx("Leave Room Now", () => game.requestImmediateLeave(state.selectedRoomId, r.matchId, r.roundId));
   }
-  return runTx("Yêu cầu rời phòng", () => game.requestLeave(state.selectedRoomId));
+  return runTx("Request to Leave Room", () => game.requestLeave(state.selectedRoomId));
 }
 
 async function deposit() {
@@ -526,13 +526,13 @@ async function deposit() {
   if (allowance < amount) {
     await runTx("Approve METOK", () => tokenWriteWith(state.signer).approve(CONFIG.gameAddress, amount), { refresh: false });
   }
-  await runTx("Nạp METOK vào Vault", () => gameWriteWith(state.signer).deposit(amount));
+  await runTx("Deposit METOK to Vault", () => gameWriteWith(state.signer).deposit(amount));
 }
 async function withdraw(all = false) {
   if (!await requireWallet()) return;
-  if (all) return runTx("Rút toàn bộ METOK", () => gameWriteWith(state.signer).withdrawAll());
+  if (all) return runTx("Withdraw All METOK", () => gameWriteWith(state.signer).withdrawAll());
   const amount = parseMetok($("withdrawInput").value);
-  return runTx("Rút METOK", () => gameWriteWith(state.signer).withdraw(amount));
+  return runTx("Withdraw METOK", () => gameWriteWith(state.signer).withdraw(amount));
 }
 
 function sessionStorageKey() { return state.account ? `metokrps.session.${CONFIG.chainId}.${CONFIG.gameAddress.toLowerCase()}.${state.account.toLowerCase()}` : null; }
@@ -560,18 +560,18 @@ async function refreshSession() {
   try {
     const active = await gameRead.activeSession(state.account);
     if (active === ZERO) {
-      $("sessionStatus").textContent = "Chưa cấu hình"; $("sessionAddress").textContent = "—"; $("sessionMon").textContent = "—"; $("sessionRisk").textContent = "—"; $("sessionExpiry").textContent = "—"; return;
+      $("sessionStatus").textContent = "Not configured"; $("sessionAddress").textContent = "—"; $("sessionMon").textContent = "—"; $("sessionRisk").textContent = "—"; $("sessionExpiry").textContent = "—"; return;
     }
     const [s, risk, mon, usable] = await Promise.all([gameRead.sessions(active), gameRead.sessionRiskAvailable(state.account), readProvider.getBalance(active), gameRead.isSessionUsable(active)]);
     const localMatch = state.sessionWallet && isSame(state.sessionWallet.address, active);
-    $("sessionStatus").textContent = usable ? (localMatch ? "✓ Fast Play sẵn sàng" : "On-chain · thiếu key local") : "Không khả dụng";
+    $("sessionStatus").textContent = usable ? (localMatch ? "✓ Fast Play ready" : "On-chain · local key missing") : "Unavailable";
     $("sessionStatus").style.color = usable && localMatch ? "var(--green)" : "#ffc978";
     $("sessionAddress").textContent = short(active);
     $("sessionAddress").title = active;
     $("sessionMon").textContent = `${fmtMon(mon)} MON`;
     $("sessionRisk").textContent = `${fmt(risk)} METOK`;
-    $("sessionExpiry").textContent = new Date(Number(s.expiresAt) * 1000).toLocaleString("vi-VN");
-    $("sessionGasLabel").textContent = state.useSession && localMatch ? `Session ${short(active)}` : "Ví chính";
+    $("sessionExpiry").textContent = new Date(Number(s.expiresAt) * 1000).toLocaleString("en-US");
+    $("sessionGasLabel").textContent = state.useSession && localMatch ? `Session ${short(active)}` : "Main wallet";
   } catch (err) { console.warn("session refresh", err); }
 }
 
@@ -580,7 +580,7 @@ async function setupOrReplaceSession() {
   const maxRoom = parseMetok($("sessionMaxBankroll").value);
   const risk = parseMetok($("sessionRiskLimit").value);
   const hours = Number($("sessionHours").value);
-  if (!Number.isFinite(hours) || hours < 1 || hours > 720) throw new Error("Thời hạn phải từ 1 đến 720 giờ.");
+  if (!Number.isFinite(hours) || hours < 1 || hours > 720) throw new Error("Duration must be between 1 and 720 hours.");
   const expiresAt = BigInt(now() + Math.floor(hours * 3600));
   const gasMon = $("sessionGas").value.trim();
   const fresh = ethers.Wallet.createRandom();
@@ -595,7 +595,7 @@ async function setupOrReplaceSession() {
         { name:"owner", type:"address" }, { name:"session", type:"address" }, { name:"maxRoomBankroll", type:"uint256" }, { name:"riskLimit", type:"uint256" }, { name:"expiresAt", type:"uint64" }, { name:"nonce", type:"uint256" }
       ]
     }, { owner: state.account, session: fresh.address, maxRoomBankroll: maxRoom, riskLimit: risk, expiresAt, nonce });
-    await runTx("Cấu hình Fast Play", () => gameWriteWith(state.signer).setupSession(fresh.address, maxRoom, risk, expiresAt, proof), { refresh: false });
+    await runTx("Configure Fast Play", () => gameWriteWith(state.signer).setupSession(fresh.address, maxRoom, risk, expiresAt, proof), { refresh: false });
   } else {
     proof = await fresh.signTypedData(domain, {
       SessionReplace: [
@@ -609,13 +609,13 @@ async function setupOrReplaceSession() {
     }
   }
   if (gasMon && Number(gasMon) > 0) {
-    await runTx("Cấp MON cho session", () => gameWriteWith(state.signer).fundSessionGas({ value: ethers.parseEther(gasMon) }), { refresh: false });
+    await runTx("Fund Session with MON", () => gameWriteWith(state.signer).fundSessionGas({ value: ethers.parseEther(gasMon) }), { refresh: false });
   }
   state.useSession = true;
   localStorage.setItem(`${sessionStorageKey()}.enabled`, "true");
   $("useSessionToggle").checked = true;
   await refreshAll();
-  showModal("Fast Play đã sẵn sàng", `<p>Session <strong>${escapeHtml(fresh.address)}</strong> đã được cấu hình. Private key chỉ lưu trong sessionStorage của tab này.</p><p>Đóng tab có thể làm mất key. Nếu mất, dùng ví chính để Replace hoặc Revoke session.</p>`);
+  showModal("Fast Play is ready", `<p>Session <strong>${escapeHtml(fresh.address)}</strong> has been configured. The private key is stored only in this tab’s sessionStorage.</p><p>Closing the tab may lose the key. If it is lost, use the main wallet to replace or revoke the session.</p>`);
 }
 
 async function revokeSession() {
@@ -633,27 +633,27 @@ async function refreshAdmin() {
     if (!isOwner) return;
     $("ownerCountLabel").textContent = count.toString(); $("thresholdLabel").textContent = `${threshold}/${count}`; $("ownerEpochLabel").textContent = epoch.toString(); $("adminFeesLabel").textContent = `${fmt(fees)} METOK`;
     const owners = await Promise.all(Array.from({ length: Number(count) }, (_, i) => gameRead.protocolOwners(i)));
-    $("ownersList").innerHTML = `<div class="subhead" style="margin:0 0 8px"><h3>Protocol owners</h3><span>${owners.length} địa chỉ</span></div>` + owners.map((o,i) => `<div class="owner-row"><span>#${i+1}</span><strong>${escapeHtml(o)}</strong></div>`).join("");
+    $("ownersList").innerHTML = `<div class="subhead" style="margin:0 0 8px"><h3>Protocol owners</h3><span>${owners.length} addresses</span></div>` + owners.map((o,i) => `<div class="owner-row"><span>#${i+1}</span><strong>${escapeHtml(o)}</strong></div>`).join("");
   } catch (err) { console.warn("admin refresh", err); }
 }
 
 async function propose(kind) {
   if (!await requireWallet()) return;
   const game = gameWriteWith(state.signer);
-  if (kind === "add") { const a = $("ownerTargetInput").value.trim(); if (!ethers.isAddress(a)) throw new Error("Địa chỉ owner không hợp lệ."); return runTx("Đề xuất thêm owner", () => game.proposeAddOwner(a)); }
-  if (kind === "remove") { const a = $("ownerTargetInput").value.trim(); if (!ethers.isAddress(a)) throw new Error("Địa chỉ owner không hợp lệ."); return runTx("Đề xuất xóa owner", () => game.proposeRemoveOwner(a)); }
-  if (kind === "fee") { const bps = Number($("newFeeInput").value); if (!Number.isInteger(bps) || bps < 0 || bps > 500) throw new Error("Fee phải 0–500 bps."); return runTx("Đề xuất đổi phí", () => game.proposeFeeChange(bps)); }
-  if (kind === "withdraw") { const amount = parseMetok($("feeWithdrawInput").value); return runTx("Đề xuất rút protocol fee", () => game.proposeFeeWithdrawal(amount)); }
+  if (kind === "add") { const a = $("ownerTargetInput").value.trim(); if (!ethers.isAddress(a)) throw new Error("Invalid owner address."); return runTx("Propose Add Owner", () => game.proposeAddOwner(a)); }
+  if (kind === "remove") { const a = $("ownerTargetInput").value.trim(); if (!ethers.isAddress(a)) throw new Error("Invalid owner address."); return runTx("Propose Remove Owner", () => game.proposeRemoveOwner(a)); }
+  if (kind === "fee") { const bps = Number($("newFeeInput").value); if (!Number.isInteger(bps) || bps < 0 || bps > 500) throw new Error("Fee must be 0–500 bps."); return runTx("Propose Fee Change", () => game.proposeFeeChange(bps)); }
+  if (kind === "withdraw") { const amount = parseMetok($("feeWithdrawInput").value); return runTx("Propose Protocol Fee Withdrawal", () => game.proposeFeeWithdrawal(amount)); }
 }
 
 async function loadProposal() {
-  const id = $("proposalIdInput").value.trim(); if (!id) throw new Error("Nhập Proposal ID.");
+  const id = $("proposalIdInput").value.trim(); if (!id) throw new Error("Enter a Proposal ID.");
   const p = await gameRead.getProposal(id); state.currentProposal = { id, p };
-  const eta = Number(p.eta) ? new Date(Number(p.eta) * 1000).toLocaleString("vi-VN") : "Chưa đạt quorum/timelock";
+  const eta = Number(p.eta) ? new Date(Number(p.eta) * 1000).toLocaleString("en-US") : "Quorum/timelock not reached";
   $("proposalDetail").textContent = `Type: ${PROPOSAL_TYPE[Number(p.proposalType)]}\nAccount: ${p.account}\nValue: ${p.value}\nApprovals: ${p.approvals}/${p.requiredApprovals}\nETA: ${eta}\nEpoch: ${p.ownerEpoch}\nExecuted: ${p.executed}`;
 }
 async function approveProposal() {
-  if (!await requireWallet()) return; const id = $("proposalIdInput").value.trim(); if (!id) throw new Error("Nhập Proposal ID."); await runTx(`Approve proposal #${id}`, () => gameWriteWith(state.signer).approveProposal(id)); await loadProposal();
+  if (!await requireWallet()) return; const id = $("proposalIdInput").value.trim(); if (!id) throw new Error("Enter a Proposal ID."); await runTx(`Approve proposal #${id}`, () => gameWriteWith(state.signer).approveProposal(id)); await loadProposal();
 }
 async function executeProposal() {
   if (!await requireWallet()) return; if (!state.currentProposal) await loadProposal();
@@ -662,7 +662,7 @@ async function executeProposal() {
   else if (t === 2) await runTx(`Execute fee withdrawal #${id}`, () => game.executeFeeWithdrawal(id));
   else if (t === 3) await runTx(`Accept owner #${id}`, () => game.acceptOwner(id));
   else if (t === 4) await runTx(`Execute remove owner #${id}`, () => game.executeRemoveOwner(id));
-  else throw new Error("Proposal type không thể execute.");
+  else throw new Error("This proposal type cannot be executed.");
   await loadProposal();
 }
 
@@ -682,8 +682,8 @@ function bindEvents() {
   $("depositBtn").addEventListener("click", () => safe(deposit));
   $("withdrawBtn").addEventListener("click", () => safe(() => withdraw(false)));
   $("withdrawAllBtn").addEventListener("click", () => safe(() => withdraw(true)));
-  $("copyRoomBtn").addEventListener("click", () => safe(async () => { if (!state.selectedRoomId) throw new Error("Chưa chọn room."); const url = `${location.origin}${location.pathname}?room=${state.selectedRoomId}`; await navigator.clipboard.writeText(url); toast("Đã copy link mời", `Room #${state.selectedRoomId}`, "success"); }));
-  $("backupSecretBtn").addEventListener("click", () => safe(async () => { const local = getLocalChoice(); if (!local) throw new Error("Không có secret."); await navigator.clipboard.writeText(JSON.stringify({ roomId:state.selectedRoomId, matchId:state.selectedRoom.matchId.toString(), roundId:state.selectedRoom.roundId.toString(), choice:local.choice, secret:local.secret })); showModal("Secret đã copy", "<p>Giữ bản sao này riêng tư cho tới khi round kết thúc. Người có secret có thể biết lựa chọn commit của bạn.</p>"); }));
+  $("copyRoomBtn").addEventListener("click", () => safe(async () => { if (!state.selectedRoomId) throw new Error("No room selected."); const url = `${location.origin}${location.pathname}?room=${state.selectedRoomId}`; await navigator.clipboard.writeText(url); toast("Invite link copied", `Room #${state.selectedRoomId}`, "success"); }));
+  $("backupSecretBtn").addEventListener("click", () => safe(async () => { const local = getLocalChoice(); if (!local) throw new Error("No secret available."); await navigator.clipboard.writeText(JSON.stringify({ roomId:state.selectedRoomId, matchId:state.selectedRoom.matchId.toString(), roundId:state.selectedRoom.roundId.toString(), choice:local.choice, secret:local.secret })); showModal("Secret copied", "<p>Keep this copy private until the round ends. Anyone with the secret can determine your committed choice.</p>"); }));
   $("setupSessionBtn").addEventListener("click", () => safe(setupOrReplaceSession));
   $("revokeSessionBtn").addEventListener("click", () => safe(revokeSession));
   $("useSessionToggle").addEventListener("change", e => { state.useSession = e.target.checked; if (sessionStorageKey()) localStorage.setItem(`${sessionStorageKey()}.enabled`, String(state.useSession)); refreshSession(); });
@@ -694,13 +694,13 @@ function bindEvents() {
   $("loadProposalBtn").addEventListener("click", () => safe(loadProposal));
   $("approveProposalBtn").addEventListener("click", () => safe(approveProposal));
   $("executeProposalBtn").addEventListener("click", () => safe(executeProposal));
-  $("copyContractBtn").addEventListener("click", () => navigator.clipboard.writeText(CONFIG.gameAddress).then(() => toast("Đã copy contract", short(CONFIG.gameAddress), "success")));
+  $("copyContractBtn").addEventListener("click", () => navigator.clipboard.writeText(CONFIG.gameAddress).then(() => toast("Contract copied", short(CONFIG.gameAddress), "success")));
   $("modalCloseBtn").addEventListener("click", closeModal);
   $("modalBackdrop").addEventListener("click", e => { if (e.target === $("modalBackdrop")) closeModal(); });
   window.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
 }
 
-async function safe(fn) { try { return await fn(); } catch (err) { toast("Không thể thực hiện", friendlyError(err), "error"); } }
+async function safe(fn) { try { return await fn(); } catch (err) { toast("Unable to complete action", friendlyError(err), "error"); } }
 
 async function init() {
   bindEvents();
@@ -726,4 +726,4 @@ async function init() {
   if ("serviceWorker" in navigator && location.protocol === "https:") navigator.serviceWorker.register("./sw.js").catch(() => {});
 }
 
-init().catch(err => toast("Khởi động DApp thất bại", friendlyError(err), "error"));
+init().catch(err => toast("Failed to start DApp", friendlyError(err), "error"));

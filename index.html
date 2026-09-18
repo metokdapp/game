@@ -23,7 +23,7 @@
     </a>
     <div class="top-actions">
       <div class="network-chip"><span class="status-dot"></span> Monad</div>
-      <button id="connectBtn" class="btn btn-primary compact">Kết nối ví</button>
+      <button id="connectBtn" class="btn btn-primary compact">Connect Wallet</button>
     </div>
   </header>
 
@@ -31,11 +31,11 @@
     <section class="hero panel hero-panel">
       <div class="hero-copy">
         <div class="eyebrow"><span>⚡</span> Rock · Paper · Scissors on-chain</div>
-        <h1>Chơi như game thật.<br><span>Quyết toán bằng METOK.</span></h1>
-        <p>Chọn nhanh, commit ẩn, reveal công bằng. METOK nằm trong Vault và chỉ ví chính mới rút được.</p>
+        <h1>Play like a real game.<br><span>Settle with METOK.</span></h1>
+        <p>Choose fast, commit privately, and reveal fairly. METOK stays in the Vault and can only be withdrawn by the main wallet.</p>
         <div class="hero-actions">
-          <button id="quickPlayBtn" class="btn btn-accent">🎮 Chơi ngay</button>
-          <button id="openVaultBtn" class="btn btn-ghost">💎 Nạp METOK</button>
+          <button id="quickPlayBtn" class="btn btn-accent">🎮 Play Now</button>
+          <button id="openVaultBtn" class="btn btn-ghost">💎 Deposit METOK</button>
         </div>
       </div>
       <div class="arena-preview" aria-hidden="true">
@@ -49,79 +49,79 @@
     </section>
 
     <section class="stats-grid" aria-label="Wallet and protocol status">
-      <article class="stat-card panel"><span>Ví METOK</span><strong id="walletMetok">—</strong><small id="walletAddress">Chưa kết nối</small></article>
-      <article class="stat-card panel"><span>Vault khả dụng</span><strong id="vaultBalance">—</strong><small>METOK có thể chơi/rút</small></article>
-      <article class="stat-card panel"><span>MON gas</span><strong id="monBalance">—</strong><small id="sessionGasLabel">Ví chính</small></article>
-      <article class="stat-card panel"><span>Phí game</span><strong id="feeLabel">3.00%</strong><small id="solvencyLabel">Vault đang kiểm tra…</small></article>
+      <article class="stat-card panel"><span>METOK Wallet</span><strong id="walletMetok">—</strong><small id="walletAddress">Not connected</small></article>
+      <article class="stat-card panel"><span>Available Vault</span><strong id="vaultBalance">—</strong><small>METOK available to play/withdraw</small></article>
+      <article class="stat-card panel"><span>MON gas</span><strong id="monBalance">—</strong><small id="sessionGasLabel">Main wallet</small></article>
+      <article class="stat-card panel"><span>Game fee</span><strong id="feeLabel">3.00%</strong><small id="solvencyLabel">Checking Vault…</small></article>
     </section>
 
     <nav class="tabs panel" aria-label="Main navigation">
-      <button class="tab active" data-tab="lobby">🏟️ Sảnh chơi</button>
-      <button class="tab" data-tab="game">🎮 Trận đấu</button>
+      <button class="tab active" data-tab="lobby">🏟️ Lobby</button>
+      <button class="tab" data-tab="game">🎮 Match</button>
       <button class="tab" data-tab="vault">💎 Vault</button>
       <button class="tab" data-tab="fast">⚡ Fast Play</button>
-      <button class="tab" data-tab="admin" id="adminTab" hidden>🛡️ Quản trị</button>
+      <button class="tab" data-tab="admin" id="adminTab" hidden>🛡️ Admin</button>
     </nav>
 
     <section class="tab-view active" id="view-lobby">
       <div class="section-head">
-        <div><div class="eyebrow">MATCHMAKING</div><h2>Sảnh chơi</h2><p>Tạo bàn mới hoặc vào một bàn đang chờ.</p></div>
-        <button id="refreshLobbyBtn" class="icon-btn" title="Làm mới">↻</button>
+        <div><div class="eyebrow">MATCHMAKING</div><h2>Lobby</h2><p>Create a new room or join one that is waiting.</p></div>
+        <button id="refreshLobbyBtn" class="icon-btn" title="Refresh">↻</button>
       </div>
       <div class="lobby-layout">
         <article class="panel create-card">
-          <div class="card-title"><span class="title-icon">＋</span><div><strong>Tạo phòng</strong><small>Khóa bankroll từ Vault</small></div></div>
-          <label>Stake mỗi ván <span>METOK</span><input id="stakeInput" inputmode="decimal" type="number" min="0" step="any" placeholder="10" /></label>
-          <label>Bankroll ban đầu <span>METOK</span><input id="bankrollInput" inputmode="decimal" type="number" min="0" step="any" placeholder="100" /></label>
-          <div class="hint" id="createHint">Bankroll phải ≥ stake.</div>
-          <button id="createRoomBtn" class="btn btn-accent full">Tạo phòng</button>
+          <div class="card-title"><span class="title-icon">＋</span><div><strong>Create Room</strong><small>Lock bankroll from Vault</small></div></div>
+          <label>Stake per round <span>METOK</span><input id="stakeInput" inputmode="decimal" type="number" min="0" step="any" placeholder="10" /></label>
+          <label>Initial bankroll <span>METOK</span><input id="bankrollInput" inputmode="decimal" type="number" min="0" step="any" placeholder="100" /></label>
+          <div class="hint" id="createHint">Bankroll must be ≥ stake.</div>
+          <button id="createRoomBtn" class="btn btn-accent full">Create Room</button>
         </article>
 
         <article class="panel join-card">
-          <div class="card-title"><span class="title-icon">#</span><div><strong>Vào bằng Room ID</strong><small>Dùng đúng bankroll của chủ phòng</small></div></div>
+          <div class="card-title"><span class="title-icon">#</span><div><strong>Join by Room ID</strong><small>Use the host’s exact bankroll</small></div></div>
           <label>Room ID<input id="joinRoomInput" inputmode="numeric" type="number" min="1" step="1" placeholder="1" /></label>
-          <button id="inspectRoomBtn" class="btn btn-ghost full">Xem phòng</button>
-          <button id="joinRoomBtn" class="btn btn-primary full">Vào phòng</button>
+          <button id="inspectRoomBtn" class="btn btn-ghost full">View Room</button>
+          <button id="joinRoomBtn" class="btn btn-primary full">Join Room</button>
         </article>
       </div>
 
-      <div class="subhead"><h3>Phòng gần đây</h3><span id="roomCountLabel">Đang tải…</span></div>
-      <div id="roomsGrid" class="rooms-grid"><div class="empty-state panel">Đang đọc dữ liệu on-chain…</div></div>
+      <div class="subhead"><h3>Recent Rooms</h3><span id="roomCountLabel">Loading…</span></div>
+      <div id="roomsGrid" class="rooms-grid"><div class="empty-state panel">Reading on-chain data…</div></div>
     </section>
 
     <section class="tab-view" id="view-game">
       <div class="section-head">
-        <div><div class="eyebrow">LIVE MATCH</div><h2>Trận đấu</h2><p id="gameSubtitle">Chọn một phòng để bắt đầu.</p></div>
-        <div class="room-tools"><button id="copyRoomBtn" class="btn btn-ghost compact">🔗 Mời bạn</button><button id="leaveBtn" class="btn btn-danger compact">Rời phòng</button></div>
+        <div><div class="eyebrow">LIVE MATCH</div><h2>Match</h2><p id="gameSubtitle">Select a room to begin.</p></div>
+        <div class="room-tools"><button id="copyRoomBtn" class="btn btn-ghost compact">🔗 Invite Friend</button><button id="leaveBtn" class="btn btn-danger compact">Leave Room</button></div>
       </div>
 
-      <div id="gameEmpty" class="panel empty-state tall"><div class="empty-emoji">🎲</div><strong>Chưa chọn phòng</strong><span>Vào Sảnh chơi, chọn một phòng hoặc mở link mời.</span></div>
+      <div id="gameEmpty" class="panel empty-state tall"><div class="empty-emoji">🎲</div><strong>No room selected</strong><span>Go to the Lobby, select a room, or open an invite link.</span></div>
 
       <div id="gameArena" class="game-arena" hidden>
         <article class="panel scoreboard">
           <div class="player-side">
             <span class="avatar host-avatar">H</span><div><small>HOST</small><strong id="hostName">—</strong><span id="hostBankroll">— METOK</span></div>
           </div>
-          <div class="round-center"><span id="roundPill" class="pill">ROUND —</span><strong id="timerLabel">—</strong><small id="phaseLabel">Đang đồng bộ</small></div>
+          <div class="round-center"><span id="roundPill" class="pill">ROUND —</span><strong id="timerLabel">—</strong><small id="phaseLabel">Syncing</small></div>
           <div class="player-side right">
             <div><small>CHALLENGER</small><strong id="challengerName">—</strong><span id="challengerBankroll">— METOK</span></div><span class="avatar challenger-avatar">C</span>
           </div>
         </article>
 
         <article class="panel choice-stage">
-          <div class="choice-head"><div><span class="eyebrow">CHỌN NƯỚC</span><h3 id="choiceTitle">Rock, Paper hay Scissors?</h3></div><div id="commitState" class="commit-state">Chưa commit</div></div>
+          <div class="choice-head"><div><span class="eyebrow">CHOOSE MOVE</span><h3 id="choiceTitle">Rock, Paper or Scissors?</h3></div><div id="commitState" class="commit-state">Not committed</div></div>
           <div class="choices">
-            <button class="choice-btn" data-choice="1"><span>✊</span><strong>Rock</strong><small>Đá</small></button>
-            <button class="choice-btn" data-choice="2"><span>✋</span><strong>Paper</strong><small>Giấy</small></button>
-            <button class="choice-btn" data-choice="3"><span>✌️</span><strong>Scissors</strong><small>Kéo</small></button>
+            <button class="choice-btn" data-choice="1"><span>✊</span><strong>Rock</strong><small>Rock</small></button>
+            <button class="choice-btn" data-choice="2"><span>✋</span><strong>Paper</strong><small>Paper</small></button>
+            <button class="choice-btn" data-choice="3"><span>✌️</span><strong>Scissors</strong><small>Scissors</small></button>
           </div>
           <div id="revealBox" class="reveal-box" hidden>
-            <div><strong id="savedChoiceLabel">Đã lưu lựa chọn</strong><small>Secret chỉ được gửi khi reveal.</small></div>
+            <div><strong id="savedChoiceLabel">Choice saved</strong><small>The secret is only submitted during reveal.</small></div>
             <button id="revealBtn" class="btn btn-accent">Reveal ngay</button>
           </div>
           <div class="game-actions">
-            <button id="resolveTimeoutBtn" class="btn btn-ghost" hidden>⏱ Xử lý timeout</button>
-            <button id="backupSecretBtn" class="btn btn-ghost" hidden>🔐 Sao lưu secret</button>
+            <button id="resolveTimeoutBtn" class="btn btn-ghost" hidden>⏱ Resolve Timeout</button>
+            <button id="backupSecretBtn" class="btn btn-ghost" hidden>🔐 Back Up Secret</button>
           </div>
         </article>
 
@@ -129,25 +129,25 @@
           <div><span>Room</span><strong id="roomIdLabel">#—</strong></div>
           <div><span>Match</span><strong id="matchIdLabel">—</strong></div>
           <div><span>Stake</span><strong id="stakeLabel">—</strong></div>
-          <div><span>Phí snapshot</span><strong id="roomFeeLabel">—</strong></div>
+          <div><span>Fee snapshot</span><strong id="roomFeeLabel">—</strong></div>
         </article>
       </div>
     </section>
 
     <section class="tab-view" id="view-vault">
-      <div class="section-head"><div><div class="eyebrow">PLAYER VAULT</div><h2>METOK Vault</h2><p>Nạp 1:1 thành credit nội bộ; chỉ ví chính có thể rút.</p></div></div>
+      <div class="section-head"><div><div class="eyebrow">PLAYER VAULT</div><h2>METOK Vault</h2><p>Deposit 1:1 as internal credit; only the main wallet can withdraw.</p></div></div>
       <div class="two-col">
         <article class="panel vault-card">
-          <div class="big-balance"><small>Khả dụng trong Vault</small><strong id="vaultBig">—</strong><span>METOK</span></div>
-          <label>Số METOK<input id="depositInput" inputmode="decimal" type="number" min="0" step="any" placeholder="100" /></label>
-          <button id="depositBtn" class="btn btn-accent full">Nạp vào Vault</button>
-          <p class="muted">Nếu allowance chưa đủ, DApp sẽ yêu cầu Approve đúng số lượng trước rồi mới Deposit.</p>
+          <div class="big-balance"><small>Available in Vault</small><strong id="vaultBig">—</strong><span>METOK</span></div>
+          <label>METOK Amount<input id="depositInput" inputmode="decimal" type="number" min="0" step="any" placeholder="100" /></label>
+          <button id="depositBtn" class="btn btn-accent full">Deposit to Vault</button>
+          <p class="muted">If allowance is insufficient, the DApp will request approval for the exact amount before depositing.</p>
         </article>
         <article class="panel vault-card">
-          <div class="big-balance"><small>Ví của bạn</small><strong id="walletBig">—</strong><span>METOK</span></div>
-          <label>Số METOK<input id="withdrawInput" inputmode="decimal" type="number" min="0" step="any" placeholder="50" /></label>
-          <div class="button-row"><button id="withdrawBtn" class="btn btn-primary">Rút số này</button><button id="withdrawAllBtn" class="btn btn-ghost">Rút tất cả</button></div>
-          <p class="muted">Credit đang khóa trong phòng không thể rút cho tới khi phòng kết thúc.</p>
+          <div class="big-balance"><small>Your Wallet</small><strong id="walletBig">—</strong><span>METOK</span></div>
+          <label>METOK Amount<input id="withdrawInput" inputmode="decimal" type="number" min="0" step="any" placeholder="50" /></label>
+          <div class="button-row"><button id="withdrawBtn" class="btn btn-primary">Withdraw Amount</button><button id="withdrawAllBtn" class="btn btn-ghost">Withdraw All</button></div>
+          <p class="muted">Credit locked in a room cannot be withdrawn until the room ends.</p>
         </article>
       </div>
       <article class="panel accounting-card">
@@ -156,32 +156,32 @@
     </section>
 
     <section class="tab-view" id="view-fast">
-      <div class="section-head"><div><div class="eyebrow">OPTIONAL</div><h2>⚡ Fast Play Session</h2><p>Chơi bằng session key tạm thời để giảm pop-up ví. Session không thể rút METOK.</p></div></div>
+      <div class="section-head"><div><div class="eyebrow">OPTIONAL</div><h2>⚡ Fast Play Session</h2><p>Play with a temporary session key to reduce wallet pop-ups. A session cannot withdraw METOK.</p></div></div>
       <div class="two-col">
         <article class="panel session-card">
-          <div class="security-banner"><span>🛡️</span><div><strong>Session key chỉ nằm trong tab này</strong><p>Private key được giữ trong sessionStorage, không gửi lên server. Đóng tab có thể làm mất key; ví chính vẫn có thể revoke/replace session.</p></div></div>
-          <div class="session-status"><span>Trạng thái</span><strong id="sessionStatus">Chưa cấu hình</strong></div>
-          <div class="mini-grid"><div><span>Session</span><strong id="sessionAddress">—</strong></div><div><span>Gas MON</span><strong id="sessionMon">—</strong></div><div><span>Risk còn lại</span><strong id="sessionRisk">—</strong></div><div><span>Hết hạn</span><strong id="sessionExpiry">—</strong></div></div>
-          <label class="toggle-line"><input id="useSessionToggle" type="checkbox" /><span>Dùng Fast Play cho gameplay</span></label>
+          <div class="security-banner"><span>🛡️</span><div><strong>Session key stays only in this tab</strong><p>The private key is stored in sessionStorage and is never sent to a server. Closing the tab may lose the key; the main wallet can still revoke or replace the session.</p></div></div>
+          <div class="session-status"><span>Status</span><strong id="sessionStatus">Not configured</strong></div>
+          <div class="mini-grid"><div><span>Session</span><strong id="sessionAddress">—</strong></div><div><span>Gas MON</span><strong id="sessionMon">—</strong></div><div><span>Remaining risk</span><strong id="sessionRisk">—</strong></div><div><span>Expires</span><strong id="sessionExpiry">—</strong></div></div>
+          <label class="toggle-line"><input id="useSessionToggle" type="checkbox" /><span>Use Fast Play for gameplay</span></label>
         </article>
         <article class="panel session-card">
-          <h3>Tạo / thay session</h3>
-          <label>Max bankroll mỗi phòng <span>METOK</span><input id="sessionMaxBankroll" type="number" min="0" step="any" placeholder="100" /></label>
+          <h3>Create / Replace Session</h3>
+          <label>Max bankroll per room <span>METOK</span><input id="sessionMaxBankroll" type="number" min="0" step="any" placeholder="100" /></label>
           <label>Risk limit <span>METOK</span><input id="sessionRiskLimit" type="number" min="0" step="any" placeholder="100" /></label>
-          <label>Thời hạn <span>giờ, tối đa 720</span><input id="sessionHours" type="number" min="1" max="720" step="1" value="24" /></label>
-          <label>MON cấp gas <span>MON</span><input id="sessionGas" type="number" min="0" step="any" value="0.2" /></label>
-          <div class="button-stack"><button id="setupSessionBtn" class="btn btn-accent full">Tạo Fast Play Session</button><button id="revokeSessionBtn" class="btn btn-danger full">Revoke session hiện tại</button></div>
+          <label>Duration <span>hours, max 720</span><input id="sessionHours" type="number" min="1" max="720" step="1" value="24" /></label>
+          <label>MON for gas <span>MON</span><input id="sessionGas" type="number" min="0" step="any" value="0.2" /></label>
+          <div class="button-stack"><button id="setupSessionBtn" class="btn btn-accent full">Create Fast Play Session</button><button id="revokeSessionBtn" class="btn btn-danger full">Revoke Current Session</button></div>
         </article>
       </div>
     </section>
 
     <section class="tab-view" id="view-admin">
-      <div class="section-head"><div><div class="eyebrow">MULTI-OWNER GOVERNANCE</div><h2>Quản trị giao thức</h2><p>Chỉ hiện cho protocol owner. Quorum 2/3 làm tròn lên.</p></div></div>
-      <div class="admin-summary panel"><div><span>Số owner</span><strong id="ownerCountLabel">—</strong></div><div><span>Quorum</span><strong id="thresholdLabel">—</strong></div><div><span>Owner epoch</span><strong id="ownerEpochLabel">—</strong></div><div><span>Protocol fees</span><strong id="adminFeesLabel">—</strong></div></div>
+      <div class="section-head"><div><div class="eyebrow">MULTI-OWNER GOVERNANCE</div><h2>Protocol Governance</h2><p>Visible only to protocol owners. Quorum is two-thirds, rounded up.</p></div></div>
+      <div class="admin-summary panel"><div><span>Owner count</span><strong id="ownerCountLabel">—</strong></div><div><span>Quorum</span><strong id="thresholdLabel">—</strong></div><div><span>Owner epoch</span><strong id="ownerEpochLabel">—</strong></div><div><span>Protocol fees</span><strong id="adminFeesLabel">—</strong></div></div>
       <div class="admin-grid">
-        <article class="panel admin-card"><h3>Owner</h3><label>Địa chỉ<input id="ownerTargetInput" placeholder="0x…" /></label><div class="button-stack"><button id="proposeAddOwnerBtn" class="btn btn-primary full">Đề xuất thêm owner</button><button id="proposeRemoveOwnerBtn" class="btn btn-ghost full">Đề xuất xóa owner</button></div></article>
-        <article class="panel admin-card"><h3>Phí</h3><label>Fee mới <span>bps · max 500</span><input id="newFeeInput" type="number" min="0" max="500" value="300" /></label><button id="proposeFeeBtn" class="btn btn-primary full">Đề xuất đổi phí</button><label>Rút protocol fee <span>METOK</span><input id="feeWithdrawInput" type="number" min="0" step="any" /></label><button id="proposeWithdrawFeeBtn" class="btn btn-primary full">Đề xuất rút fee</button></article>
-        <article class="panel admin-card"><h3>Proposal</h3><label>Proposal ID<input id="proposalIdInput" type="number" min="1" step="1" /></label><button id="loadProposalBtn" class="btn btn-ghost full">Tải proposal</button><div id="proposalDetail" class="proposal-detail">Chưa tải.</div><div class="button-stack"><button id="approveProposalBtn" class="btn btn-primary full">Approve</button><button id="executeProposalBtn" class="btn btn-accent full">Execute / Accept</button></div></article>
+        <article class="panel admin-card"><h3>Owner</h3><label>Address<input id="ownerTargetInput" placeholder="0x…" /></label><div class="button-stack"><button id="proposeAddOwnerBtn" class="btn btn-primary full">Propose Add Owner</button><button id="proposeRemoveOwnerBtn" class="btn btn-ghost full">Propose Remove Owner</button></div></article>
+        <article class="panel admin-card"><h3>Fee</h3><label>New fee <span>bps · max 500</span><input id="newFeeInput" type="number" min="0" max="500" value="300" /></label><button id="proposeFeeBtn" class="btn btn-primary full">Propose Fee Change</button><label>Withdraw protocol fee <span>METOK</span><input id="feeWithdrawInput" type="number" min="0" step="any" /></label><button id="proposeWithdrawFeeBtn" class="btn btn-primary full">Propose Fee Withdrawal</button></article>
+        <article class="panel admin-card"><h3>Proposal</h3><label>Proposal ID<input id="proposalIdInput" type="number" min="1" step="1" /></label><button id="loadProposalBtn" class="btn btn-ghost full">Load Proposal</button><div id="proposalDetail" class="proposal-detail">Not loaded.</div><div class="button-stack"><button id="approveProposalBtn" class="btn btn-primary full">Approve</button><button id="executeProposalBtn" class="btn btn-accent full">Execute / Accept</button></div></article>
       </div>
       <div id="ownersList" class="owners-list panel"></div>
     </section>
@@ -195,7 +195,7 @@
   <div id="toastStack" class="toast-stack" aria-live="polite"></div>
   <div id="modalBackdrop" class="modal-backdrop" hidden>
     <div class="modal panel" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <div class="modal-head"><h3 id="modalTitle">Thông báo</h3><button id="modalCloseBtn" class="icon-btn">×</button></div>
+      <div class="modal-head"><h3 id="modalTitle">Notice</h3><button id="modalCloseBtn" class="icon-btn">×</button></div>
       <div id="modalBody"></div>
     </div>
   </div>
